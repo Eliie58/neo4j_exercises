@@ -9,9 +9,9 @@ You'll work step-by-step to explore, analyze, and master Cypher queries using re
 
 ### 🔧 Create Constraints
 ```cypher
-CREATE CONSTRAINT ON (u:User) ASSERT u.name IS NOT NULL;
-CREATE CONSTRAINT ON (m:Movie) ASSERT m.title IS UNIQUE;
-CREATE CONSTRAINT ON (s:TV_Show) ASSERT s.title IS UNIQUE;
+CREATE CONSTRAINT FOR (u:User) REQUIRE u.name IS NOT NULL;
+CREATE CONSTRAINT FOR (m:Movie) REQUIRE m.title IS UNIQUE;
+CREATE CONSTRAINT FOR (s:TV_Show) REQUIRE s.title IS UNIQUE;
 ```
 💡 Constraints ensure data integrity and speed up queries.
 
