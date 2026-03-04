@@ -136,7 +136,125 @@ Find all movies watched by friends of friends of Alice, showing for each movie t
 
 ---
 
-## 7. Key Takeaways
+## 7. Updating and Merging Data (`MERGE`, `SET`)
+
+So far, we’ve only created data using `CREATE`.
+In real applications, you usually want to:
+
+* Avoid duplicates
+* Update existing nodes
+* Create data only if it does not exist
+
+That’s where `MERGE` and `SET` come in.
+
+---
+
+### 🔹 `MERGE` – Match or Create
+
+`MERGE` tries to find a pattern.
+If it doesn’t exist, it creates it.
+
+Example:
+
+```cypher
+MERGE (p:Person {name: 'Eve'})
+ON CREATE SET p.age = 26
+ON MATCH SET p.lastSeen = date()
+RETURN p;
+```
+
+Explanation:
+
+* If Eve does not exist → create her with age 26
+* If she already exists → update her `lastSeen` property
+
+---
+
+### 🔹 Updating Existing Data with `SET`
+
+You can update properties using `SET`.
+
+Example:
+
+```cypher
+MATCH (p:Person {name: 'Alice'})
+SET p.age = 31
+RETURN p;
+```
+
+You can also update relationships:
+
+```cypher
+MATCH (alice:Person {name: 'Alice'})-[r:WATCHED]->(m:Movie {title: 'Inception'})
+SET r.rating = 4
+RETURN r;
+```
+
+---
+
+### Exercise 6
+
+1. Add a new person named **Frank**, age 29, but make sure you don’t create duplicates.
+2. Increase Bob’s age by 1.
+3. Change Carol’s rating for "The Matrix" to 5.
+
+---
+
+## 8. Deleting Data (`DELETE`, `DETACH DELETE`)
+
+Sometimes you need to remove data from the graph.
+
+⚠️ Important: Neo4j does **not** allow deleting a node that still has relationships attached.
+
+---
+
+### 🔹 Deleting a Relationship
+
+```cypher
+MATCH (bob:Person {name: 'Bob'})-[r:FRIENDS_WITH]->(carol:Person {name: 'Carol'})
+DELETE r;
+```
+
+This removes only the relationship.
+
+---
+
+### 🔹 Deleting a Node
+
+If the node has relationships, you must use `DETACH DELETE`:
+
+```cypher
+MATCH (p:Person {name: 'Dave'})
+DETACH DELETE p;
+```
+
+This:
+
+* Deletes Dave
+* Deletes all relationships connected to him
+
+---
+
+### 🔹 Conditional Deletion Example
+
+Delete movies released before 2000:
+
+```cypher
+MATCH (m:Movie)
+WHERE m.year < 2000
+DETACH DELETE m;
+```
+
+---
+
+### Exercise 7
+
+1. Remove the friendship between Alice and Bob.
+2. Delete the movie "Interstellar".
+3. Delete all people who have never watched a movie.
+
+---
+## 9. Key Takeaways
 
 ✅ Use `*` for variable-length path traversal
 ✅ Use `WITH` to build multi-stage logic
@@ -149,3 +267,4 @@ Find all movies watched by friends of friends of Alice, showing for each movie t
 Find the top 2 movies (by average rating) among all people within 2 hops of Bob’s friends.
 
 Use a combination of `*`, `WITH`, and aggregation functions to solve it!
+
